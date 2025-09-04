@@ -1,0 +1,31 @@
+name: Kotlin Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    - name: Build and run with kotlinc
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-17-jdk
+        wget https://github.com/JetBrains/kotlin/releases/download/v1.9.22/kotlin-compiler-1.9.22.zip
+        unzip kotlin-compiler-1.9.22.zip -d kotlin-compiler
+        export PATH="$PATH:$(pwd)/kotlin-compiler/bin"
+        kotlinc hello_world.kt -include-runtime -d hello_world.jar
+        java -jar hello_world.jar
